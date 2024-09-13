@@ -70,9 +70,25 @@ int main(void)
 
 	LCD_SetFont(&Font8);
 	LCD_SetColors(LCD_COLOR_MAGENTA, LCD_COLOR_BLACK); // TextColor, BackColor
-	LCD_DisplayStringAtLineMode(39, "copyright xyz", CENTER_MODE);
+	LCD_DisplayStringAtLineMode(39, "Abazi Elmi", CENTER_MODE);
+
+
+	__HAL_RCC_GPIO_CLK_ENABLE();
+
+	GPIO_InitTypeDef timer;
+
+	timer.Alternate = 0;
+	timer.Mode = GPIO_MODE_OUTPUT_PP;
+	timer.Pin = GPIO_PIN_
+
+
+
+
+
 
 	int cnt = 0;
+	int cnt2 = 0;
+
 	/* Infinite loop */
 	while (1)
 	{
@@ -85,6 +101,17 @@ int main(void)
 		LCD_SetTextColor(LCD_COLOR_BLUE);
 		LCD_SetPrintPosition(5, 0);
 		printf("   Timer: %.1f", cnt/10.0);
+
+
+
+
+
+
+
+
+
+
+
 
 		// test touch interface
 		int x, y;
