@@ -37,6 +37,25 @@ void SysTick_Handler(void)
 	HAL_IncTick();
 }
 
+volatile int timer_select = 0;
+volatile int farbe_select = 0;
+
+void EXTI0_IRQHandler(void){
+
+	__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_0);
+
+	timer_select = !timer_select;
+
+}
+
+void  EXTI2_IRQHandler(void){
+
+	__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_2);
+
+	farbe_select = !farbe_select;
+}
+
+
 /**
  * @brief  The application entry point.
  * @retval int
@@ -73,21 +92,46 @@ int main(void)
 	LCD_DisplayStringAtLineMode(39, "Abazi Elmi", CENTER_MODE);
 
 
-	__HAL_RCC_GPIO_CLK_ENABLE();
+	GPIO_InitTypeDef LED;
 
-	GPIO_InitTypeDef timer;
+	LED.Alternate = 0;
+	LED.Mode = GPIO_MODE_AF_PP;
+	LED.Pin = GPIO_PIN_13;
+	LED.Pull = GPIO_NOPULL;
+	LED.Speed = GPIO_SPEED_FAST;
 
-	timer.Alternate = 0;
-	timer.Mode = GPIO_MODE_OUTPUT_PP;
-	timer.Pin = GPIO_PIN_
-
-
-
-
+	HAL_GPIO_Init(GPIOG, &LED);
 
 
-	int cnt = 0;
+	HAL_NVIC_EnableIRQ(EXTI2_IRQn);
+
+	GPIO_InitTypeDef farbe;
+
+	farbe.Alternate = 0;
+	farbe.Mode = GPIO_MODE_IT_RISING;
+	farbe.Pin = GPIO_PIN_2;
+	farbe.Pull = GPIO_NOPULL;
+	farbe.Speed = GPIO_SPEED_FAST;
+
+	HAL_GPIO_Init(GPIOC, &farbe);
+
+
+
+	int cnt1 = 0;
 	int cnt2 = 0;
+
+
+	HAL_NVIC_EnableIRQ(EXTI0_IRQn);
+
+	GPIO_InitTypeDef hugo;
+
+	hugo.Alternate = 0;
+	hugo.Mode = GPIO_MODE_IT_RISING;
+	hugo.Pin = GPIO_PIN_0;
+	hugo.Pull = GPIO_NOPULL;
+	hugo.Speed = GPIO_SPEED_FAST;
+
+	HAL_GPIO_Init(GPIOA, &hugo);
 
 	/* Infinite loop */
 	while (1)
@@ -96,23 +140,24 @@ int main(void)
 		HAL_Delay(100);
 
 		// display timer
-		cnt++;
+		cnt1++;
 		LCD_SetFont(&Font20);
-		LCD_SetTextColor(LCD_COLOR_BLUE);
+		LCD_SetTextColor(LCD_COLOR_RED);
 		LCD_SetPrintPosition(5, 0);
-		printf("   Timer: %.1f", cnt/10.0);
+
+		HAL_GPIO_TogglePin(GPIOG, GPIO_PIN_13);
+		HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_0);
+		printf("   Timer: %.1f", cnt1/10.0);
+
+		LCD_SetPrintPosition(7, 0);
+		printf("   Timer2: %.1f", cnt2/10.0);
 
 
-
-
-
-
-
-
-
-
-
-
+		if(timer_select == 0){
+			cnt1++;
+		}else if(timer_select == 1){
+			cnt2++;
+		}
 		// test touch interface
 		int x, y;
 		if (GetTouchState(&x, &y)) {
@@ -121,6 +166,7 @@ int main(void)
 
 
 	}
+//return cnt1;
 }
 
 /**
